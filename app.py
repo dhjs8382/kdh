@@ -7,8 +7,8 @@ import time
 # 0. 페이지 레이아웃 및 디자인 설정
 st.set_page_config(page_title="영주시 멀티모달 AI 그린리모델링", layout="wide")
 
-st.title("🏢 영주시 공간 GIS 기반 그린리모델링 진단 시스템")
-st.caption("건축물 외관 이미지(정성 평가) + 공공데이터 GIS(정량 지표) 결합 분석 솔루션")
+st.title("이름 뭘로하지")
+st.caption("건축물 외관 이미지 + 공공데이터 GIS 결합 분석 솔루션")
 st.markdown("---")
 
 base_path = "./"
