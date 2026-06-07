@@ -5,7 +5,7 @@ import os
 import time
 
 # 0. 페이지 레이아웃 및 디자인 설정
-st.set_page_config(page_title="김동훈 짱짱", layout="wide")
+st.set_page_config(page_title="김동훈 짱짱  ", layout="wide")
 
 st.title("이름 뭘로하지")
 st.caption("건축물 외관 이미지 + 공공데이터 GIS 결합 분석 솔루션")
@@ -61,7 +61,7 @@ uploaded_file = st.file_uploader("여기를 클릭하거나 사진 파일을 드
 st.markdown("---")
 
 if uploaded_file is None:
-    st.info("💡 위 화면에 진단할 건축물 사진을 업로드해 주세요. 사진이 등록되면 이미지 기반 정성 평가와 GIS 공공데이터 정량 분석이 함께 수행됩니다.")
+    st.info("💡 위 화면에 진단할 건축물 사진을 업로드해 주세요.")
 else:
     st.success("🎉 이미지 업로드 완료! 정성·정량 통합 분석을 시작합니다.")
 
