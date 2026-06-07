@@ -5,7 +5,7 @@ import os
 import time
 
 # 0. 페이지 레이아웃 및 디자인 설정
-st.set_page_config(page_title="영주시 멀티모달 AI 그린리모델링", layout="wide")
+st.set_page_config(page_title="김동훈 짱짱", layout="wide")
 
 st.title("이름 뭘로하지")
 st.caption("건축물 외관 이미지 + 공공데이터 GIS 결합 분석 솔루션")
