@@ -7,10 +7,10 @@ from google import genai
 from PIL import Image
 
 # 0. 페이지 레이아웃 및 디자인 설정
-st.set_page_config(page_title="영주시 노후 주택 진단 및 주거환경 개선 가이드", layout="wide")
+st.set_page_config(page_title="page_title", layout="wide")
 
-st.title("🏛️ 영주시 노후 주택 진단 및 주거환경 개선 가이드")
-st.caption("AI와 GIS 공공데이터를 융합한 실시간 주택 진단 및 의사결정 지원 플랫폼")
+st.title("main_title")
+st.caption("sub_title")
 st.markdown("---")
 
 base_path = "./"
@@ -44,7 +44,7 @@ def load_actual_data():
     data['통합동명'] = data['분석구역'].apply(to_legal_dong)
 
     grouped = data.groupby('통합동명').agg({
-        '최종_그린리모델링_시급도점수': 'mean',
+        '최종_리모델링_시급도점수': 'mean',
         '시급도_원점수': 'mean',
         '빈집_개수': 'sum',
         '노인복지시설_개수': 'sum',
@@ -69,21 +69,21 @@ def load_actual_data():
 df_actual = load_actual_data()
 
 # 2. 사이드바 - 지리 구역 설정
-st.sidebar.header("📍 1단계: 진단 지역 설정")
+st.sidebar.header(" 진단 지역 설정")
 dong_list = df_actual['통합동명'].unique().tolist()
 selected_dong = st.sidebar.selectbox("건축물이 위치한 영주시 읍면동을 고르세요:", dong_list)
 row = df_actual[df_actual['통합동명'] == selected_dong].iloc[0]
 
 # 3. 메인 화면 - 사진 업로드 세션
-st.subheader("📷 2단계: 건축물 현장 외관 사진 업로드 및 AI 분석")
+st.subheader(" 건축물 현장 외관 사진 업로드 및 AI 분석")
 uploaded_file = st.file_uploader("여기를 클릭하거나 사진 파일을 드래그하여 업로드하세요 (JPG, PNG)", type=["jpg", "png", "jpeg"])
 
 st.markdown("---")
 
 if uploaded_file is None:
-    st.info("💡 위 화면에 진단할 건축물 사진을 업로드해 주세요.")
+    st.info(" 위 화면에 진단할 건축물 사진을 업로드해 주세요.")
 else:
-    st.success("🎉 이미지 업로드 완료! Gemini 비전 AI 및 GIS 공공데이터 융합 분석을 시작합니다.")
+    st.success(" 이미지 업로드 완료 이제 분석 파트")
 
     col1, col2 = st.columns([5, 5])
 
@@ -93,7 +93,7 @@ else:
 
     # [왼쪽 영역] Gemini 멀티모달 AI 시각 분석 결과 출력
     with col1:
-        st.subheader("👁️ Gemini AI 실시간 외관 정성 평가")
+        st.subheader(" AI 실시간 외관 정성 평가")
         img = Image.open(uploaded_file)
         st.image(img, caption="현장 수집 건축물 외관", use_column_width=True)
 
@@ -184,7 +184,7 @@ else:
     st.markdown("---")
 
     # 5. 하단 영역 - 지도 레이아웃 배치
-    st.subheader("🗺️ 영주시 읍면동별 거시 지표 분석")
+    st.subheader("영주시 읍면동별 거시 지표 분석")
     st.caption("영주시 전체의 주거환경 취약도 및 개선 시급도 분포 현황")
 
     html_path = os.path.join(base_path, '영주시_새_읍면동_최종지도.html')
