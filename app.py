@@ -71,7 +71,7 @@ df_actual = load_actual_data()
 # 2. 사이드바 - 지리 구역 설정
 st.sidebar.header("빠른 지역 설정(나중에 상세 주소형식도 추가하기)")
 dong_list = df_actual['통합동명'].unique().tolist()
-selected_dong = st.sidebar.selectbox("건축물이 위치한 영주시 동을 고르세요:", dong_list)
+selected_dong = st.sidebar.selectbox("건축물이 위치한 영주시 읍면동을 고르세요:", dong_list)
 row = df_actual[df_actual['통합동명'] == selected_dong].iloc[0]
 
 # 3. 메인 화면 - 사진 업로드 세션
