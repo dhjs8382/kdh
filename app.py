@@ -44,7 +44,7 @@ def load_actual_data():
     data['통합동명'] = data['분석구역'].apply(to_legal_dong)
 
     grouped = data.groupby('통합동명').agg({
-        '최종_리모델링_시급도점수': 'mean',
+        '최종_그린리모델링_시급도점수': 'mean',
         '시급도_원점수': 'mean',
         '빈집_개수': 'sum',
         '노인복지시설_개수': 'sum',
