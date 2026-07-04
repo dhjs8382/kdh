@@ -69,9 +69,9 @@ def load_actual_data():
 df_actual = load_actual_data()
 
 # 2. 사이드바 - 지리 구역 설정
-st.sidebar.header(" 진단 지역 설정")
+st.sidebar.header("빠른 지역 설정(나중에 상세 주소형식도 추가하기)")
 dong_list = df_actual['통합동명'].unique().tolist()
-selected_dong = st.sidebar.selectbox("건축물이 위치한 영주시 읍면동을 고르세요:", dong_list)
+selected_dong = st.sidebar.selectbox("건축물이 위치한 영주시 동을 고르세요:", dong_list)
 row = df_actual[df_actual['통합동명'] == selected_dong].iloc[0]
 
 # 3. 메인 화면 - 사진 업로드 세션
@@ -83,7 +83,7 @@ st.markdown("---")
 if uploaded_file is None:
     st.info(" 위 화면에 진단할 건축물 사진을 업로드해 주세요.")
 else:
-    st.success(" 이미지 업로드 완료 이제 분석 파트")
+    st.success(" 이미지 업로드 완료 ")
 
     col1, col2 = st.columns([5, 5])
 
@@ -101,7 +101,7 @@ else:
             vision_score = 75.0
             ai_report = "API 키가 설정되지 않아 실시간 AI 리포트를 출력할 수 없습니다."
         else:
-            with st.spinner("🔄 Gemini AI가 주택 사진을 정밀 분석 중입니다..."):
+            with st.spinner(" AI가 주택 사진을 정밀 분석 중입니다..."):
                 try:
                     # 💡 [프롬프트 설계] Gemini에게 0~100점 사이의 정성 점수를 확실히 뱉어내라고 지정
                     dong_info_text = f"""
@@ -147,11 +147,11 @@ else:
                                     vision_score = temp_score
                                     break
                 except Exception as e:
-                    st.error(f"❌ Gemini API 호출 중 오류가 발생했습니다: {e}")
+                    st.error(f" API 호출 중 오류가 발생했습니다: {e}")
                     vision_score = 70.0
                     ai_report = "오류가 발생하여 리포트를 생성하지 못했습니다."
 
-        st.markdown("### 🤖 Gemini AI 분석 리포트")
+        st.markdown("### AI 분석 리포트")
         st.markdown(ai_report)
 
     # 💡 [핵심] 7대 3 비율 가중치 결합 계산 로직 적용
@@ -174,7 +174,7 @@ else:
         m_c4.metric(label="👵 노인시설", value=f"{int(row['노인복지시설_개수'])}개")
         m_c5.metric(label="🌳 녹지시설", value=f"{int(row['녹지시설_개수'])}개")
 
-        st.markdown("#### 🧮 데이터 융합 가중치 프로세스")
+        st.markdown("#### 최종 점수 산출 기준")
         st.info(f"""
         * **정성 지표 (70%):** Gemini Vision AI가 사진을 판독하여 채점한 주택 외관 노후 점수 (**{vision_score:.1f}점**)
         * **정량 지표 (30%):** 영주시 전체 읍면동 통계를 기반으로 100점 만점으로 환산한 지역 취약도 점수 (**{regional_score:.1f}점**)
@@ -184,7 +184,7 @@ else:
     st.markdown("---")
 
     # 5. 하단 영역 - 지도 레이아웃 배치
-    st.subheader("영주시 읍면동별 거시 지표 분석")
+    st.subheader("영주시 읍면동별 거시 지표")
     st.caption("영주시 전체의 주거환경 취약도 및 개선 시급도 분포 현황")
 
     html_path = os.path.join(base_path, '영주시_새_읍면동_최종지도.html')
