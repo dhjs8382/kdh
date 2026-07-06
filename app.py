@@ -6,7 +6,7 @@ import time
 from google import genai
 from PIL import Image
 
-# 0. 페이지 레이아웃 및 디자인 설정
+# 0. 페이지 레이아웃 및 디자인
 st.set_page_config(page_title="page_title", layout="wide")
 
 st.title("main_title")
@@ -15,16 +15,16 @@ st.markdown("---")
 
 base_path = "./"
 
-# 안전한 API 키 로드
+# API 키 로드
 try:
     GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
     client = genai.Client(api_key=GEMINI_API_KEY)
 except Exception:
-    st.error("🔒 Streamlit Secrets에 'GEMINI_API_KEY'가 설정되지 않았거나 올바르지 않습니다.")
+    st.error(" Streamlit Secrets에 'GEMINI_API_KEY'가 설정되지 않았거나 올바르지 않습니다.")
     GEMINI_API_KEY = None
     client = None
 
-# 1. 🗄️ 실제 CSV 데이터 로드 및 법정동 통합
+# 1. 실제 CSV 데이터 로드 및 법정동 통합
 @st.cache_data
 def load_actual_data():
     csv_path = os.path.join(base_path, '영주시_동별_리모델링_순위.csv')
@@ -54,7 +54,7 @@ def load_actual_data():
     
     grouped = grouped[~grouped['통합동명'].isin(['대동', '영동'])].reset_index(drop=True)
 
-    # 💡 [추가] 지역 시급도 원점수를 전체 지역 데이터를 기준으로 0~100점 사이로 변환 (Min-Max Scaling)
+    # [추가] 지역 시급도 원점수를 전체 지역 데이터를 기준으로 0~100점 사이로 변환 (Min-Max Scaling)
     min_val = grouped['시급도_원점수'].min()
     max_val = grouped['시급도_원점수'].max()
     
@@ -68,13 +68,13 @@ def load_actual_data():
 
 df_actual = load_actual_data()
 
-# 2. 사이드바 - 지리 구역 설정
+# 2. 사이드바 구역 설정
 st.sidebar.header("빠른 지역 설정(나중에 상세 주소형식도 추가하기)")
 dong_list = df_actual['통합동명'].unique().tolist()
 selected_dong = st.sidebar.selectbox("건축물이 위치한 영주시 읍면동을 고르세요:", dong_list)
 row = df_actual[df_actual['통합동명'] == selected_dong].iloc[0]
 
-# 3. 메인 화면 - 사진 업로드 세션
+# 3. 메인 화면 사진 업로드
 st.subheader(" 건축물 현장 외관 사진 업로드 및 AI 분석")
 uploaded_file = st.file_uploader("여기를 클릭하거나 사진 파일을 드래그하여 업로드하세요 (JPG, PNG)", type=["jpg", "png", "jpeg"])
 
@@ -87,11 +87,11 @@ else:
 
     col1, col2 = st.columns([5, 5])
 
-    # [오른쪽 영역 미리 정의] 정량 데이터 창고 준비
+    # [오른쪽 영역] 정량 데이터 창고 준비
     # 변환된 지역 시급도 점수 가져오기
     regional_score = row['시급도_변환점수']
 
-    # [왼쪽 영역] Gemini 멀티모달 AI 시각 분석 결과 출력
+    # [왼쪽 영역] AI 시각 분석 결과 출력
     with col1:
         st.subheader(" AI 실시간 외관 정성 평가")
         img = Image.open(uploaded_file)
@@ -134,7 +134,7 @@ else:
                     )
                     ai_report = response.text
                     
-                    # 💡 [점수 연동 꿀팁] Gemini가 뱉어낸 텍스트에서 점수를 추출하는 파싱 로직 
+                    # ai가 뱉어낸 텍스트에서 점수를 추출하는 파싱 로직 
                     # 만약 실패하면 기본 시뮬레이션용 점수로 방어코드 구축
                     vision_score = 70.0  # 기본값
                     for line in ai_report.split('\n'):
@@ -154,18 +154,18 @@ else:
         st.markdown("### AI 분석 리포트")
         st.markdown(ai_report)
 
-    # 💡 [핵심] 7대 3 비율 가중치 결합 계산 로직 적용
+    # 가중치 결합 계산 로직 적용
     final_combined_score = (vision_score * 0.7) + (regional_score * 0.3)
 
-    # [오른쪽 영역] 정량 GIS 데이터 및 최종 결합 점수 표출
+    # 정량 GIS 데이터 및 최종 결합 점수 표출
     with col2:
-        st.subheader(f"📊 [{selected_dong}] GIS 공공데이터 및 통합 진단")
+        st.subheader(f" [{selected_dong}] GIS 공공데이터 및 통합 진단")
 
-        # 💡 7:3 비율로 연산된 최신화된 최종 시급도 점수 마크
+        # 연산된 최신화된 최종 시급도 점수 마크
         st.metric(label="🔥 최종 주거환경 개선 시급도 점수 (AI 70% + 지역 30%)", value=f"{final_combined_score:.1f} / 100점")
 
         m_c1, m_c2 = st.columns(2)
-        # 💡 원점수 대신 0~100점으로 정문화된 변환 점수를 보여줌
+        # 원점수 대신 0~100점으로 정문화된 변환 점수 출력
         m_c1.metric(label="📉 100점 환산 지역 시급도 점수", value=f"{regional_score:.1f}점")
         m_c2.metric(label="🏢 총 공동주택 세대수", value=f"{int(row['총_공동주택_세대수']):,} 세대")
 
@@ -183,7 +183,7 @@ else:
 
     st.markdown("---")
 
-    # 5. 하단 영역 - 지도 레이아웃 배치
+    # 5. 하단 영역 지도 레이아웃 배치
     st.subheader("영주시 읍면동별 거시 지표")
     st.caption("영주시 전체의 주거환경 취약도 및 개선 시급도 분포 현황")
 
@@ -193,4 +193,5 @@ else:
             html_data = f.read()
         components.html(html_data, height=550, scrolling=True)
     else:
-        st.warning("⚠️ '영주시_새_읍면동_최종지도.html' 파일이 배치되어야 지도가 표시됩니다.")
+        st.warning(" '영주시_새_읍면동_최종지도.html' 파일이 배치되어야 지도가 표시됩니다.")
+    
