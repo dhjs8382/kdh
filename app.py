@@ -128,7 +128,11 @@ else:
                     4. **맞춤형 주거환경 개선 가이드**: 이 건물과 지역 특성에 맞는 맞춤형 단열/차열 건축 공법(쿨루프, 외단열 등)을 조언해 주시고
                     콘크리트 탈락 및 철근 노출 보수 현상이 나타날경우 "CROS 방청 및 단면 복구 시스템을 적용하여 노출된 철근의 부동태 피막을 재생하고 알칼리성을 회복시킨 뒤 고강도 모르타르로 단면을 복구할수있습니다"라는 솔루션을 넣어 조언해주시고
                     외벽 누수 현상이 나타날경우 "외벽 타일 누수는 줄눈 천공 후 스테인리스 핀 고정과 고점도 에폭시 수지 주입으로 구조적 결함을 해결하고, 노화된 실리콘을 제거한 자리에 고탄성 폴리우레탄 실란트를 채워 균열을 메우며, 외벽 건조 후 침투성 발수제를 2회 이상 전면 도포하여 미세 기공을 통한 빗물 흡수를 차단함으로써 해결할 수 있습니다."라는 솔루션을 넣어 조언해 주세요.
-                    """
+                    **[중요 - 시스템 파싱 규칙]**
+텍스트의 맨 마지막 줄에 다른 문장 없이 오직 아래 형식으로만 종합 점수를 한 줄 추가해 주세요. (코드가 이 값을 읽어갑니다)
+SCORE: 계산한정수점수
+"""
+                    
 
                     response = client.models.generate_content(
                         model='gemini-2.5-flash',
@@ -138,16 +142,25 @@ else:
                     
                     # ai가 뱉어낸 텍스트에서 점수를 추출하는 파싱 로직 
                     # 만약 실패하면 기본 시뮬레이션용 점수로 방어코드 구축
-                    vision_score = 70.0  # 기본값
-                    for line in ai_report.split('\n'):
-                        if '점수' in line and any(str(i) in line for i in range(10)):
-                            import re
-                            nums = re.findall(r'\d+', line)
-                            if nums:
-                                temp_score = float(nums[0])
-                                if 0 <= temp_score <= 100:
-                                    vision_score = temp_score
-                                    break
+# 💡 [수정] 정규표현식 파싱 로직을 'SCORE:' 기반으로 훨씬 정밀하게 변경
+vision_score = 70.0  # 에러 대비 기본값
+try:
+    import re
+    # 텍스트 전체에서 'SCORE: 숫자' 패턴을 찾음
+    match = re.search(r'SCORE:\s*(\d+)', ai_report)
+    if match:
+        vision_score = float(match.group(1))
+    else:
+        # 만약 SCORE: 형식을 못 찾았다면, 기존처럼 '점수'가 들어간 라인을 찾되 더 안전하게 파싱
+        for line in ai_report.split('\n'):
+            if '종합 외관 노후도 점수' in line or '외관 노후도 점수' in line:
+                nums = re.findall(r'\d+', line)
+                if nums:
+                    # 해당 라인에서 발견된 첫 번째 숫자가 0~100 사이인지 확인
+                    temp_score = float(nums[0])
+                    if 0 <= temp_score <= 100:
+                        vision_score = temp_score
+                        break
                 except Exception as e:
                     st.error(f" API 호출 중 오류가 발생했습니다: {e}")
                     vision_score = 70.0
@@ -178,8 +191,8 @@ else:
 
         st.markdown("#### 최종 점수 산출 기준")
         st.info(f"""
-        * **정성 지표 (70%):** Gemini Vision AI가 사진을 판독하여 채점한 주택 외관 노후 점수 (**{vision_score:.1f}점**)
-        * **정량 지표 (30%):** 영주시 전체 읍면동 통계를 기반으로 100점 만점으로 환산한 지역 취약도 점수 (**{regional_score:.1f}점**)
+        * **정성 지표 (80%):** Gemini Vision AI가 사진을 판독하여 채점한 주택 외관 노후 점수 (**{vision_score:.1f}점**)
+        * **정량 지표 (20%):** 영주시 전체 읍면동 통계를 기반으로 100점 만점으로 환산한 지역 취약도 점수 (**{regional_score:.1f}점**)
         * **최종 연산 산식:** `({vision_score:.1f} × 0.8) + ({regional_score:.1f} × 0.2) = {final_combined_score:.1f}점`
         """)
 
