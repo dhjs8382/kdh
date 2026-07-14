@@ -69,7 +69,7 @@ def load_actual_data():
 df_actual = load_actual_data()
 
 # 2. 사이드바 구역 설정
-st.sidebar.header("빠른 지역 설정(나중에 상세 주소형식도 추가하기)")
+st.sidebar.header("빠른 지역 설정")
 dong_list = df_actual['통합동명'].unique().tolist()
 selected_dong = st.sidebar.selectbox("건축물이 위치한 영주시 읍면동을 고르세요:", dong_list)
 row = df_actual[df_actual['통합동명'] == selected_dong].iloc[0]
@@ -93,7 +93,7 @@ else:
 
     # [왼쪽 영역] AI 시각 분석 결과 출력
     with col1:
-        st.subheader(" AI 실시간 외관 정성 평가")
+        st.subheader(" AI 외관 정성 평가")
         img = Image.open(uploaded_file)
         st.image(img, caption="현장 수집 건축물 외관", use_column_width=True)
 
@@ -125,7 +125,9 @@ else:
                     1. **건축물 외관 노후도 분석**: 사진을 바탕으로 외벽 균열, 도장 벗겨짐, 창호 노후도 상태를 공학적으로 예리하게 평가해 주세요.
                     2. **종합 외관 노후도 점수 (정성 점수)**: 오직 '사진 속 상태'만을 기준으로 삼아 **반드시 0점~100점 사이의 정수 점수**를 명시하는데 안좋아 보일수록 100점에 가깝게 상태가 괜찮아 보일수록 0점에 가깝게 명시해주시고 그 명확한 산정 기준을 설명해 주세요. (예: 외관 노후도 점수: XX점)
                     3. **지역 데이터 연계 융합 진단**: 제공된 동네의 GIS 데이터와 이 주택의 상태를 연결하여 분석해 주세요.
-                    4. **맞춤형 주거환경 개선 가이드**: 이 건물과 지역 특성에 맞는 맞춤형 단열/차열 건축 공법(쿨루프, 외단열 등)을 조언해 주세요.
+                    4. **맞춤형 주거환경 개선 가이드**: 이 건물과 지역 특성에 맞는 맞춤형 단열/차열 건축 공법(쿨루프, 외단열 등)을 조언해 주시고
+                    콘크리트 탈락 및 철근 노출 보수 현상이 나타날경우 "CROS 방청 및 단면 복구 시스템을 적용하여 노출된 철근의 부동태 피막을 재생하고 알칼리성을 회복시킨 뒤 고강도 모르타르로 단면을 복구할수있습니다"라는 솔루션을 넣어 조언해주시고
+                    외벽 누수 현상이 나타날경우 "외벽 타일 누수는 줄눈 천공 후 스테인리스 핀 고정과 고점도 에폭시 수지 주입으로 구조적 결함을 해결하고, 노화된 실리콘을 제거한 자리에 고탄성 폴리우레탄 실란트를 채워 균열을 메우며, 외벽 건조 후 침투성 발수제를 2회 이상 전면 도포하여 미세 기공을 통한 빗물 흡수를 차단함으로써 해결할 수 있습니다."라는 솔루션을 넣어 조언해 주세요.
                     """
 
                     response = client.models.generate_content(
@@ -155,18 +157,18 @@ else:
         st.markdown(ai_report)
 
     # 가중치 결합 계산 로직 적용
-    final_combined_score = (vision_score * 0.7) + (regional_score * 0.3)
+    final_combined_score = (vision_score * 0.8) + (regional_score * 0.2)
 
     # 정량 GIS 데이터 및 최종 결합 점수 표출
     with col2:
         st.subheader(f" [{selected_dong}] GIS 공공데이터 및 통합 진단")
 
         # 연산된 최신화된 최종 시급도 점수 마크
-        st.metric(label="🔥 최종 주거환경 개선 시급도 점수 (AI 70% + 지역 30%)", value=f"{final_combined_score:.1f} / 100점")
+        st.metric(label=" 최종 주거환경 개선 우선도 점수 (AI 80% + 지역 20%)", value=f"{final_combined_score:.1f} / 100점")
 
         m_c1, m_c2 = st.columns(2)
         # 원점수 대신 0~100점으로 정문화된 변환 점수 출력
-        m_c1.metric(label="📉 100점 환산 지역 시급도 점수", value=f"{regional_score:.1f}점")
+        m_c1.metric(label="📉 100점 환산 지역 우선도 점수", value=f"{regional_score:.1f}점")
         m_c2.metric(label="🏢 총 공동주택 세대수", value=f"{int(row['총_공동주택_세대수']):,} 세대")
 
         m_c3, m_c4, m_c5 = st.columns(3)
@@ -178,7 +180,7 @@ else:
         st.info(f"""
         * **정성 지표 (70%):** Gemini Vision AI가 사진을 판독하여 채점한 주택 외관 노후 점수 (**{vision_score:.1f}점**)
         * **정량 지표 (30%):** 영주시 전체 읍면동 통계를 기반으로 100점 만점으로 환산한 지역 취약도 점수 (**{regional_score:.1f}점**)
-        * **최종 연산 산식:** `({vision_score:.1f} × 0.7) + ({regional_score:.1f} × 0.3) = {final_combined_score:.1f}점`
+        * **최종 연산 산식:** `({vision_score:.1f} × 0.8) + ({regional_score:.1f} × 0.2) = {final_combined_score:.1f}점`
         """)
 
     st.markdown("---")
