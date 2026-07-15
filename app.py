@@ -20,7 +20,7 @@ try:
     GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
     client = genai.Client(api_key=GEMINI_API_KEY)
 except Exception:
-    st.error("🔒 Streamlit Secrets에 'GEMINI_API_KEY'가 설정되지 않았거나 올바르지 않습니다.")
+    st.error(" Streamlit Secrets에 'GEMINI_API_KEY'가 설정되지 않았거나 올바르지 않습니다.")
     GEMINI_API_KEY = None
     client = None
 
@@ -69,21 +69,21 @@ def load_actual_data():
 df_actual = load_actual_data()
 
 # 2. 사이드바 구역 설정
-st.sidebar.header("📍 빠른 지역 설정")
+st.sidebar.header(" 빠른 지역 설정")
 dong_list = df_actual['통합동명'].unique().tolist()
 selected_dong = st.sidebar.selectbox("건축물이 위치한 영주시 읍면동을 고르세요:", dong_list)
 row = df_actual[df_actual['통합동명'] == selected_dong].iloc[0]
 
 # 3. 메인 화면 사진 업로드
-st.subheader("📷 건축물 현장 외관 사진 업로드 및 AI 분석")
+st.subheader(" 건축물 현장 외관 사진 업로드 및 AI 분석")
 uploaded_file = st.file_uploader("여기를 클릭하거나 사진 파일을 드래그하여 업로드하세요 (JPG, PNG)", type=["jpg", "png", "jpeg"])
 
 st.markdown("---")
 
 if uploaded_file is None:
-    st.info("💡 위 화면에 진단할 건축물 사진을 업로드해 주세요.")
+    st.info(" 위 화면에 진단할 건축물 사진을 업로드해 주세요.")
 else:
-    st.success("🎉 이미지 업로드 완료")
+    st.success(" 이미지 업로드 완료")
 
     col1, col2 = st.columns([5, 5])
 
@@ -93,7 +93,7 @@ else:
 
     # [왼쪽 영역] AI 시각 분석 결과 출력
     with col1:
-        st.subheader("🤖 AI 외관 정성 평가")
+        st.subheader(" AI 외관 정성 평가")
         img = Image.open(uploaded_file)
         st.image(img, caption="현장 수집 건축물 외관", use_column_width=True)
 
@@ -101,7 +101,7 @@ else:
             vision_score = 75.0
             ai_report = "API 키가 설정되지 않아 실시간 AI 리포트를 출력할 수 없습니다."
         else:
-            with st.spinner("🔄 AI가 주택 사진을 정밀 분석 중입니다..."):
+            with st.spinner(" AI가 주택 사진을 정밀 분석 중입니다..."):
                 try:
                     dong_info_text = f"""
                     [선택 구역 GIS 데이터]
@@ -158,11 +158,11 @@ else:
                         vision_score = 70.0
 
                 except Exception as e:
-                    st.error(f"⚠️ API 호출 중 오류가 발생했습니다: {e}")
+                    st.error(f" API 호출 중 오류가 발생했습니다: {e}")
                     vision_score = 70.0
                     ai_report = "오류가 발생하여 리포트를 생성하지 못했습니다."
 
-        st.markdown("### 📋 AI 분석 리포트")
+        st.markdown("###  AI 분석 리포트")
         st.markdown(ai_report)
 
     # 💡 가중치 결합 계산 로직 적용 (발표 수식과 대시보드 동기화 보장)
@@ -170,13 +170,13 @@ else:
 
     # [오른쪽 영역] 정량 GIS 데이터 및 최종 결합 점수 표출
     with col2:
-        st.subheader(f"📊 [{selected_dong}] GIS 공공데이터 및 통합 진단")
+        st.subheader(f" [{selected_dong}] GIS 공공데이터 및 통합 진단")
 
         # 연산된 최신화된 최종 시급도 점수 마크
-        st.metric(label="🔥 최종 주거환경 개선 우선도 점수 (AI 80% + 지역 20%)", value=f"{final_combined_score:.1f} / 100점")
+        st.metric(label=" 최종 주거환경 개선 우선도 점수 (AI 80% + 지역 20%)", value=f"{final_combined_score:.1f} / 100점")
 
         m_c1, m_c2 = st.columns(2)
-        m_c1.metric(label="📉 100점 환산 지역 우선도 점수", value=f"{regional_score:.1f}점")
+        m_c1.metric(label=" 100점 환산 지역 우선도 점수", value=f"{regional_score:.1f}점")
         m_c2.metric(label="🏢 총 공동주택 세대수", value=f"{int(row['총_공동주택_세대수']):,} 세대")
 
         m_c3, m_c4, m_c5 = st.columns(3)
@@ -194,7 +194,7 @@ else:
     st.markdown("---")
 
     # 5. 하단 영역 지도 레이아웃 배치
-    st.subheader("🗺️ 영주시 읍면동별 거시 지표")
+    st.subheader(" 영주시 읍면동별 거시 지표")
     st.caption("영주시 전체의 주거환경 취약도 및 개선 시급도 분포 현황")
 
     html_path = os.path.join(base_path, '영주시_새_읍면동_최종지도.html')
