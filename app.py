@@ -173,10 +173,10 @@ else:
         st.subheader(f" [{selected_dong}] GIS 공공데이터 및 통합 진단")
 
         # 연산된 최신화된 최종 시급도 점수 마크
-        st.metric(label=" 최종 주거환경 개선 우선도 점수 (AI 80% + 지역 20%)", value=f"{final_combined_score:.1f} / 100점")
+        st.metric(label=" 최종 주거환경 개선 중요도 점수 (AI 80% + 지역 20%)", value=f"{final_combined_score:.1f} / 100점")
 
         m_c1, m_c2 = st.columns(2)
-        m_c1.metric(label=" 100점 환산 지역 우선도 점수", value=f"{regional_score:.1f}점")
+        m_c1.metric(label=" 100점 환산 지역 중요도 점수", value=f"{regional_score:.1f}점")
         m_c2.metric(label="🏢 총 공동주택 세대수", value=f"{int(row['총_공동주택_세대수']):,} 세대")
 
         m_c3, m_c4, m_c5 = st.columns(3)
@@ -195,7 +195,7 @@ else:
 
     # 5. 하단 영역 지도 레이아웃 배치
     st.subheader(" 영주시 읍면동별 거시 지표")
-    st.caption("영주시 전체의 주거환경 취약도 및 개선 시급도 분포 현황")
+    st.caption("영주시 전체의 주거환경 취약도 및 개선 중요도 분포 현황")
 
     html_path = os.path.join(base_path, '영주시_새_읍면동_최종지도.html')
     if os.path.exists(html_path):
