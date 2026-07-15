@@ -9,7 +9,7 @@ from PIL import Image
 # 0. 페이지 레이아웃 및 디자인
 st.set_page_config(page_title="영주시 노후 주택 진단 플랫폼", layout="wide")
 
-st.title("영주시 노후 주택 진단 및 주거환경 개선 가이드")
+st.title("영주시 노후 주택 진단 및 개선 가이드")
 st.caption(".")
 st.markdown("---")
 
